@@ -23,24 +23,6 @@
     <FSlideTransition :show="showInfoCard">
       <FCard v-if="showInfoCard" @close="toggleInfoCard" @update:locale="setLocale" class="card">
         {{ data?.description[locale] }}
-
-        <!-- <div class="researchers-container">
-          <span class="researchers">
-            research head:
-            <span class="research-head color-black">
-              {{ data.research_head }}
-            </span>
-          </span>
-          <span class="researchers">
-            research lead:
-            <span class="research-lead color-black">
-              {{ data.research_lead }}
-            </span>
-          </span>
-          <div class="flex">
-            <img v-for="sdg in data.sdg_images" :key="sdg" :src="sdg" class="sdg mr-md mt-sm" />
-          </div>
-        </div> -->
         <template #footer>
           <div v-if="data?.logos">
             <img v-for="logo in data.logos" :src="logo" :key="logo" class="card-logo" />
@@ -96,7 +78,7 @@ onMounted(getData)
 
 .tooltip {
   z-index: 2;
-  position: absolute;
+  // position: absolute;
   top: 7rem;
   right: 40rem;
 }
@@ -113,7 +95,8 @@ onMounted(getData)
   .title {
     gap: 1rem;
     display: flex;
-    flex-direction: column;
+    width: 100%;
+    // flex-direction: column;
   }
 }
 

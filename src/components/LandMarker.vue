@@ -60,9 +60,74 @@ const age = ref<number>(0)
 const gender = ref<Gender>('')
 const emotion = ref<Emotion>('Neutral')
 
+const referenceDescriptors = ref<{ name: string; descriptor: Float32Array }[]>([])
+const matchedPerson = ref<string>('')
+
+const referenceImages = ['carl.jpg', 'karen.jpg', 'oussama.jpg', 'mosa.jpg'] // Adjust as needed
+
+async function loadReferenceDescriptors() {
+  await faceapi.nets.faceRecognitionNet.loadFromUri('/models')
+
+  for (const imageName of referenceImages) {
+    try {
+      const img = await faceapi.fetchImage(`/faces/${imageName}`)
+      const detection = await faceapi
+        .detectSingleFace(img, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+        .withFaceLandmarks()
+        .withFaceDescriptor()
+      if (detection) {
+        const name = imageName.split('.')[0] // Extract name from filename (e.g., 'carl')
+        referenceDescriptors.value.push({ name, descriptor: detection.descriptor })
+      } else {
+        console.warn(`No face detected in ${imageName}`)
+      }
+    } catch (error) {
+      console.error(`Error processing ${imageName}:`, error)
+    }
+  }
+}
+
+async function recognizeFace(video: HTMLVideoElement) {
+  if (!referenceDescriptors.value.length) return
+
+  const detection = await faceapi
+    .detectSingleFace(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
+    .withFaceLandmarks()
+    .withFaceDescriptor()
+
+  if (detection) {
+    const webcamDescriptor = detection.descriptor
+    let bestMatch = { name: '', distance: Infinity }
+
+    referenceDescriptors.value.forEach(({ name, descriptor }) => {
+      const distance = faceapi.euclideanDistance(webcamDescriptor, descriptor)
+      if (distance < bestMatch.distance) {
+        bestMatch = { name, distance }
+      }
+    })
+
+    const threshold = 0.6 // Adjust threshold as needed
+    if (bestMatch.distance < threshold && bestMatch.name !== matchedPerson.value) {
+      matchedPerson.value = bestMatch.name
+      emit('match', bestMatch.name)
+      console.log(
+        `Face matched: ${bestMatch.name} (distance: ${bestMatch.distance})`,
+        matchedPerson.value,
+      )
+    } else if (bestMatch.distance >= threshold && matchedPerson.value) {
+      matchedPerson.value = '' // Clear match if no good match is found
+    }
+  } else {
+    if (matchedPerson.value) {
+      matchedPerson.value = '' // Clear match if no face is detected
+    }
+  }
+}
+
 const emit = defineEmits<{
   (e: 'update', value: { age: number; gender: Gender; emotion: Emotion }): void
   (e: 'update:shapes', value: { score: number; categoryName: string }[]): void
+  (e: 'match', name: string): void
 }>()
 
 watchEffect(async () =>
@@ -124,6 +189,8 @@ let results = undefined
 let lastDetectionTime = 0
 let lastAgeGenderTime = 0
 const ageGenderInterval = 500
+let lastFaceRecognitionTime = 0
+const faceRecognitionInterval = 1000
 
 async function predictWebcam() {
   if (!video.value || !canvas.value || !webcamRunning.value) return
@@ -147,6 +214,10 @@ async function predictWebcam() {
   if (results?.faceLandmarks?.length > 0 && now - lastAgeGenderTime >= ageGenderInterval) {
     await detectAgeAndGender(video.value, results)
     lastAgeGenderTime = now
+  }
+  if (now - lastFaceRecognitionTime >= faceRecognitionInterval) {
+    await recognizeFace(video.value)
+    lastFaceRecognitionTime = now
   }
   if (webcamRunning.value) requestAnimationFrame(predictWebcam)
 }
@@ -175,6 +246,7 @@ onMounted(async () => {
   await createFaceLandmarker()
   await loadModels()
   await createFaceLandmarker()
+  await loadReferenceDescriptors()
   if (canvas.value)
     canvas.value.getContext('2d')!.clearRect(0, 0, canvas.value.width, canvas.value.height)
 })
@@ -220,6 +292,7 @@ async function detectAgeAndGender(video, results) {
   width: 780px;
   position: relative;
   height: fit-content;
+  min-height: 500px;
 }
 
 .start-button {

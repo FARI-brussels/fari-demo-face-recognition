@@ -8,14 +8,11 @@ export async function startWebcam(
     video: { width: { ideal: 320 }, height: { ideal: 240 } },
   },
 ): Promise<void> {
-  if (!video || !navigator.mediaDevices?.getUserMedia) {
+  if (!video || !navigator.mediaDevices?.getUserMedia)
     throw new Error('Webcam or getUserMedia not supported')
-  }
 
-  // Validate constraints
-  if (!constraints.video && !constraints.audio) {
+  if (!constraints.video && !constraints.audio)
     throw new Error('At least one of audio or video must be requested in constraints')
-  }
 
   try {
     console.log('Requesting webcam with constraints:', constraints)

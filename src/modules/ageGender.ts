@@ -15,6 +15,7 @@ export async function loadModels(): Promise<void> {
   await Promise.all([
     faceapi.nets.ssdMobilenetv1.loadFromUri(initParams.modelUri),
     faceapi.nets.ageGenderNet.loadFromUri(initParams.modelUri),
+    faceapi.nets.faceLandmark68Net.loadFromUri(initParams.modelUri),
   ])
 }
 

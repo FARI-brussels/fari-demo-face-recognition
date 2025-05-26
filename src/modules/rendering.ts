@@ -4,8 +4,8 @@ import {
   type FaceLandmarkerResult,
   type NormalizedLandmark,
 } from '@mediapipe/tasks-vision'
-import { ref, type Ref } from 'vue'
-import type { BlendShapes } from './types'
+import { type Ref } from 'vue'
+import type { BlendShapes } from '@/types'
 
 export function drawResults(
   canvasRef: Ref<HTMLCanvasElement | null>,
