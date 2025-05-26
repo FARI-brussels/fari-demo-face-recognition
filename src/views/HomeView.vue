@@ -78,9 +78,9 @@ onMounted(getData)
 
 .tooltip {
   z-index: 2;
-  // position: absolute;
-  top: 7rem;
-  right: 40rem;
+  position: absolute;
+  top: -1rem;
+  right: 28rem;
 }
 
 .heading {
@@ -95,8 +95,7 @@ onMounted(getData)
   .title {
     gap: 1rem;
     display: flex;
-    width: 100%;
-    // flex-direction: column;
+    flex-direction: column;
   }
 }
 
