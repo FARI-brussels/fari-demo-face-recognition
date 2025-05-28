@@ -39,29 +39,11 @@ import { FButton, FButtonIcon } from 'fari-component-library'
 import { ref, onMounted, watchEffect, type Ref } from 'vue'
 import * as vision from '@mediapipe/tasks-vision'
 import * as faceapi from 'face-api.js'
-import type { FaceDetection, WithFaceDescriptor, WithFaceLandmarks } from 'face-api.js'
 import { loadModels } from '@/modules/ageGender'
 import { hasGetUserMedia } from '@/modules/webcam'
 import { detectEmotion } from '@/modules/emotionDetection'
 import { drawLandmarks } from '@/modules/rendering'
 import type { Emotion, Gender } from '@/types'
-
-interface MatchResult {
-  name: string
-  distance: number
-}
-
-interface ReferenceDescriptor {
-  name: string
-  descriptor: Float32Array
-}
-
-interface RecognizeFaceProps {
-  video: HTMLVideoElement
-  referenceDescriptors: Ref<ReferenceDescriptor[]>
-  matchedPerson: Ref<string>
-  emit: (event: 'match', name: string) => void
-}
 
 const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision
 
@@ -81,23 +63,25 @@ const emotion = ref<Emotion>('Neutral')
 const referenceDescriptors = ref<{ name: string; descriptor: Float32Array }[]>([])
 const matchedPerson = ref<string>('')
 
+// const referenceImages = ['carl.jpg', 'karen.jpg', 'oussama.jpg', 'mosa.jpg'] // Adjust as needed
+
 const referenceImages = Object.keys(
-  import.meta.glob('/assets/faces/*.{jpg,jpeg,png}', { as: 'url', eager: true }),
-).map((path) => path.split('/').pop()!)
+  import.meta.glob('@/assets/faces/*.{jpg,jpeg,png}', { as: 'url', eager: true }),
+).map((path) => path.split('/').pop())
 
 async function loadReferenceDescriptors() {
   await faceapi.nets.faceRecognitionNet.loadFromUri('/models')
 
   for (const imageName of referenceImages) {
     try {
-      const img = await faceapi.fetchImage(`assets/faces/${imageName}`)
+      const img = await faceapi.fetchImage(`/faces/${imageName}`)
       const detection = await faceapi
         .detectSingleFace(img, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
         .withFaceLandmarks()
         .withFaceDescriptor()
 
       if (detection) {
-        const name = imageName.split('.')[0]
+        const name = imageName.split('.')[0] // Extract name from filename (e.g., 'carl')
         referenceDescriptors.value.push({ name, descriptor: detection.descriptor })
       } else {
         console.warn(`No face detected in ${imageName}`)
@@ -108,13 +92,13 @@ async function loadReferenceDescriptors() {
   }
 }
 
-async function recognizeFace(video: HTMLVideoElement): Promise<void> {
-  if (!referenceDescriptors.value?.length) return
+async function recognizeFace(video: HTMLVideoElement) {
+  if (!referenceDescriptors.value.length) return
 
   const detection = await faceapi
     .detectSingleFace(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }))
-    ?.withFaceLandmarks()
-    ?.withFaceDescriptor()
+    .withFaceLandmarks()
+    .withFaceDescriptor()
 
   if (detection) {
     const webcamDescriptor = detection.descriptor
@@ -132,11 +116,11 @@ async function recognizeFace(video: HTMLVideoElement): Promise<void> {
       matchedPerson.value = bestMatch.name
       emit('match', bestMatch.name)
     } else if (bestMatch.distance >= threshold && matchedPerson.value) {
-      matchedPerson.value = ''
+      matchedPerson.value = '' // Clear match if no good match is found
     }
   } else {
     if (matchedPerson.value) {
-      matchedPerson.value = ''
+      matchedPerson.value = '' // Clear match if no face is detected
     }
   }
 }

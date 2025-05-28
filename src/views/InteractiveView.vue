@@ -72,7 +72,10 @@ const updatePanelData = (val: { age: number; gender: Gender; emotion: Emotion })
 const updateBlendShapes = (shapes: BlendShapes) => (blendShapes.value = shapes)
 
 const selectedName = ref<string | null>(null)
-const selectMatched = (matched: string) => (selectedName.value = matched)
+const selectMatched = (matched: string) => {
+  console.log({ matched })
+  selectedName.value = matched
+}
 
 const activeMenu = ref<MenuItem>('compare')
 

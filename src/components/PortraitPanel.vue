@@ -49,13 +49,10 @@ const images = Object.entries(imageModules).map(([path, mod]) => {
   border-radius: 14px;
   transition: border-color 0.3s ease;
   position: relative;
+}
 
-  .selected {
-    border-color: #64d8bf;
-    .label {
-      background-color: #64d8bf;
-    }
-  }
+.portrait-wrapper.selected {
+  border-color: #64d8bf;
 }
 
 .label {
@@ -70,6 +67,10 @@ const images = Object.entries(imageModules).map(([path, mod]) => {
   width: 103%;
   border-bottom-left-radius: 14px;
   border-bottom-right-radius: 14px;
+}
+
+.portrait-wrapper.selected .label {
+  background-color: #64d8bf;
 }
 
 .portrait {
