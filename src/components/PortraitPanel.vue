@@ -1,13 +1,13 @@
 <template>
   <div class="portrait-container rounded p-md">
     <div
-      v-for="(img, idx) in images"
-      :key="idx"
+      v-for="{ name, label, src } in images"
+      :key="name"
       class="portrait-wrapper"
-      :class="{ selected: img.name === selected }"
+      :class="{ selected: name === selected }"
     >
-      <div class="label">{{ img.label }}</div>
-      <img :src="img.src" :alt="img.label" class="portrait" />
+      <div class="label">{{ label }}</div>
+      <img :src="src" :alt="label" class="portrait" />
     </div>
   </div>
 </template>
@@ -49,14 +49,17 @@ const images = Object.entries(imageModules).map(([path, mod]) => {
   border-radius: 14px;
   transition: border-color 0.3s ease;
   position: relative;
-}
 
-.portrait-wrapper.selected {
-  border-color: #64d8bf;
+  .selected {
+    border-color: #64d8bf;
+    .label {
+      background-color: #64d8bf;
+    }
+  }
 }
 
 .label {
-  background-color: rgba(46, 79, 191, 0.7); /* #2E4FBF at 70% */
+  background-color: rgba(46, 79, 191, 0.7);
   color: white;
   padding: 4px 8px;
   font-weight: bold;
@@ -67,10 +70,6 @@ const images = Object.entries(imageModules).map(([path, mod]) => {
   width: 103%;
   border-bottom-left-radius: 14px;
   border-bottom-right-radius: 14px;
-}
-
-.portrait-wrapper.selected .label {
-  background-color: #64d8bf;
 }
 
 .portrait {

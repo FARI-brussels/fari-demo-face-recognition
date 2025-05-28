@@ -55,9 +55,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-
-type Emotion = 'Happiness' | 'Sadness' | 'Surprise' | 'Anger' | 'Fear' | 'Neutral'
-type Gender = 'male' | 'female'
+import type { Emotion, Gender } from '@/types'
 
 interface Props {
   age: number
@@ -69,21 +67,21 @@ const { age, gender, emotion } = defineProps<Props>()
 const genderItems = [
   { emoji: '👨🏼', label: 'Male' },
   { emoji: '👩🏻', label: 'Female' },
-]
+] as const
 
 const maleAgeItems = [
   { emoji: '👦🏼', label: '0-20' },
   { emoji: '👨🏼', label: '20-40' },
   { emoji: '👨🏼‍🦳', label: '40-60' },
   { emoji: '👴🏼', label: '60+' },
-]
+] as const
 
 const femaleAgeItems = [
   { emoji: '👧🏻', label: '0-20' },
   { emoji: '👩🏻', label: '20-40' },
   { emoji: '👩🏻‍🦳', label: '40-60' },
   { emoji: '👵🏻', label: '60+' },
-]
+] as const
 
 const emotionItems = [
   { emoji: '😄', label: 'Happy' },
@@ -92,7 +90,7 @@ const emotionItems = [
   { emoji: '😮', label: 'Fearful' },
   { emoji: '😲', label: 'Surprised' },
   { emoji: '😐', label: 'Neutral' },
-]
+] as const
 
 const genderEmoji = computed(() => (gender === 'male' ? '👨🏼' : '👩🏻'))
 

@@ -49,30 +49,36 @@ import PortraitPanel from '@/components/PortraitPanel.vue'
 import DataPanel from '@/components/DataPanel.vue'
 import { useRouter } from 'vue-router'
 import { Carousel, Slide, Navigation, Pagination } from 'vue3-carousel'
-import type { Emotion, Gender } from '@/types'
+import type { Emotion, Gender, BlendShapes } from '@/types'
 import 'vue3-carousel/carousel.css'
-export type Norms = 'detect' | 'compare'
+
+type MenuItem = 'detect' | 'compare'
 
 const router = useRouter()
 
-const panelData = ref<{ age: number; gender: Gender; emotion: Emotion }>({})
-const blendShapes = ref([])
+const panelData = ref<{ age: number; gender: Gender; emotion: Emotion }>({
+  age: 0,
+  gender: 'unknown' as Gender,
+  emotion: 'neutral' as Emotion,
+})
+
+const blendShapes = ref<BlendShapes>([])
 
 const currentSlide = ref(0)
 
 const updatePanelData = (val: { age: number; gender: Gender; emotion: Emotion }) =>
   (panelData.value = val)
 
-const updateBlendShapes = (shapes) => (blendShapes.value = shapes)
+const updateBlendShapes = (shapes: BlendShapes) => (blendShapes.value = shapes)
 
 const selectedName = ref<string | null>(null)
 const selectMatched = (matched: string) => (selectedName.value = matched)
 
-const activeMenu = ref<Norms>('compare')
+const activeMenu = ref<MenuItem>('compare')
 
 const menu = computed(() => [
-  { label: 'Detect', value: 'detect' as Norms },
-  { label: 'Compare', value: 'compare' as Norms },
+  { label: 'Detect', value: 'detect' as MenuItem },
+  { label: 'Compare', value: 'compare' as MenuItem },
 ])
 </script>
 
