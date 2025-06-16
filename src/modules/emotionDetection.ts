@@ -30,18 +30,18 @@ export function detectEmotion(blendShapes: any[]) {
     0.2 * getScore('eyeSquintRight')
 
   emotions.sadness =
-    0.4 * getScore('mouthFrownLeft') +
-    0.4 * getScore('mouthFrownRight') +
-    0.3 * getScore('browDownLeft') +
-    0.3 * getScore('browDownRight') +
-    0.2 * getScore('mouthPucker')
+    0.9 * getScore('mouthFrownLeft') +
+    0.9 * getScore('mouthFrownRight') +
+    0.4 * getScore('browDownLeft') +
+    0.4 * getScore('browDownRight') +
+    0.9 * getScore('mouthPucker')
 
   emotions.surprise =
-    0.4 * getScore('eyeWideLeft') +
-    0.4 * getScore('eyeWideRight') +
-    0.3 * getScore('browUpLeft') +
-    0.3 * getScore('browUpRight') +
-    0.2 * getScore('jawOpen')
+    0.9 * getScore('eyeWideLeft') +
+    0.9 * getScore('eyeWideRight') +
+    0.9 * getScore('browUpLeft') +
+    0.9 * getScore('browUpRight') +
+    0.9 * getScore('jawOpen')
 
   emotions.anger =
     0.4 * getScore('browDownLeft') +

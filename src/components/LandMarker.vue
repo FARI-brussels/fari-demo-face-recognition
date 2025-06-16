@@ -110,18 +110,8 @@ async function recognizeFace(video: HTMLVideoElement) {
         bestMatch = { name, distance }
       }
     })
-
-    const threshold = 0.6
-    if (bestMatch.distance < threshold && bestMatch.name !== matchedPerson.value) {
-      matchedPerson.value = bestMatch.name
-      emit('match', bestMatch.name)
-    } else if (bestMatch.distance >= threshold && matchedPerson.value) {
-      matchedPerson.value = '' // Clear match if no good match is found
-    }
-  } else {
-    if (matchedPerson.value) {
-      matchedPerson.value = '' // Clear match if no face is detected
-    }
+    matchedPerson.value = bestMatch.name
+    emit('match', bestMatch.name)
   }
 }
 
